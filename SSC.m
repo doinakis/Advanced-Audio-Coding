@@ -32,9 +32,7 @@ switch prevframeType
         s_values = NaN(8,2);
         counter = 1;
         counter_bottom = 449 + 127;
-        counter_top = counter_bottom + 127;
-        
-
+        counter_top = counter_bottom + 127;        
         frameType1 = "OLS";
         frameType2 = "OLS";
         
@@ -88,6 +86,7 @@ switch prevframeType
         counter_top = counter_bottom + 127;
         frameType1 = "LPS";
         frameType2 = "LPS";
+        
         % Calculations for every subframe
         for i = 1:8 
             s_values(i,:) = sum(filtered_samples(counter_bottom:counter_top,:).^2);
@@ -103,6 +102,7 @@ switch prevframeType
                     frameType2 = "ESH";
                 end                
             end
+            
             % Increase the counters to check the next subframe
             counter_bottom = counter_bottom + 128;
             counter_top = counter_top + 128;

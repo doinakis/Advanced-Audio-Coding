@@ -20,7 +20,7 @@ for i = 1:1024:size(y,1)
     frame_counter = frame_counter + 1;
 end
 
-frameTypes = strings(275,1);
+frameTypes = strings(276,1);
 for i = 1:276
     frameT = [frame1(:,i) frame2(:,i)];
     
