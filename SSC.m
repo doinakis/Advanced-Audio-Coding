@@ -31,7 +31,7 @@ switch prevframeType
         attack_values = NaN(7,2);
         s_values = NaN(8,2);
         counter = 1;
-        counter_bottom = 449 + 127;
+        counter_bottom = 550 + 127;
         counter_top = counter_bottom + 127;        
         frameType1 = "OLS";
         frameType2 = "OLS";
@@ -65,7 +65,7 @@ switch prevframeType
         attack_values = NaN(7,2);
         s_values = NaN(8,2);
         counter = 1;
-        counter_bottom = 449 + 127;
+        counter_bottom = 550 + 127;
         counter_top = counter_bottom + 127;
         frameType1 = "LPS";
         frameType2 = "LPS";

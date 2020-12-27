@@ -31,29 +31,29 @@ for i = 1:276
     end
     if i == 1
         prevframeType = "OLS";
-        AACSeq1(i).frameType = SSC(frameT,nextframeT,prevframeType);
-        AACSeq1(i).winType = "SIN";
-        frameF = filterbank(frameT,AACSeq1(i).frameType,AACSeq1(i).winType);
-        if AACSeq1(i).frameType == "ESH"
-            AACSeq1(i).chl.frameF = reshape(frameF(:,1),[128,8]);
-            AACSeq1(i).chr.frameF = reshape(frameF(:,2),[128,8]);
+        AACSeq1(i,1).frameType = SSC(frameT,nextframeT,prevframeType);
+        AACSeq1(i,1).winType = "SIN";
+        frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
+        if AACSeq1(i,1).frameType == "ESH"
+            AACSeq1(i,1).chl.frameF = reshape(frameF(:,1),[128,8]);
+            AACSeq1(i,1).chr.frameF = reshape(frameF(:,2),[128,8]);
         else
-            AACSeq1(i).chl.frameF = frameF(:,1);
-            AACSeq1(i).chr.frameF = frameF(:,2);
+            AACSeq1(i,1).chl.frameF = frameF(:,1);
+            AACSeq1(i,1).chr.frameF = frameF(:,2);
         end
         continue;
     end
-    prevframeType = AACSeq1(i-1).frameType;
-    AACSeq1(i).frameType = SSC(frameT,nextframeT,prevframeType);
-    AACSeq1(i).winType = "SIN";
-    frameF = filterbank(frameT,AACSeq1(i).frameType,AACSeq1(i).winType);
+    prevframeType = AACSeq1(i-1,1).frameType;
+    AACSeq1(i,1).frameType = SSC(frameT,nextframeT,prevframeType);
+    AACSeq1(i,1).winType = "SIN";
+    frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
     
-    if AACSeq1(i).frameType == "ESH"
-        AACSeq1(i).chl.frameF = reshape(frameF(:,1),[128,8]);
-        AACSeq1(i).chr.frameF = reshape(frameF(:,2),[128,8]);
+    if AACSeq1(i,1).frameType == "ESH"
+        AACSeq1(i,1).chl.frameF = reshape(frameF(:,1),[128,8]);
+        AACSeq1(i,1).chr.frameF = reshape(frameF(:,2),[128,8]);
     else
-        AACSeq1(i).chl.frameF = frameF(:,1);
-        AACSeq1(i).chr.frameF = frameF(:,2);
+        AACSeq1(i,1).chl.frameF = frameF(:,1);
+        AACSeq1(i,1).chr.frameF = frameF(:,2);
     end
 
 end
