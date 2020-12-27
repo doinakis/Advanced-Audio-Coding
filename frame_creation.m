@@ -37,3 +37,7 @@ for i = 1:276
     prevframeType = frameTypes(i-1);
     frameTypes(i) = SSC(frameT,nextframeT,prevframeType);
 end
+signal = [];
+for i = 1:276
+    signal =[signal;frame1(:,i) frame2(:,i)];
+end

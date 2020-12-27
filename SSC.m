@@ -58,23 +58,6 @@ switch prevframeType
             counter_bottom = counter_bottom + 128;
             counter_top = counter_top + 128;
         end
-        
-        % Specify the final frameType using the frame types of each channel
-        % calculated above
-        if frameType1 == frameType2 
-            frameType = frameType1;
-            return;
-        end
-        if (frameType1 == "OLS" && frameType2 == "LSS") || (frameType2 == "LSS" && frameType1 == "OLS")
-            frameType = "LSS";
-            return;
-        elseif (frameType1 == "OLS" && frameType2 == "LPS") || (frameType2 == "LPS" && frameType1 == "OLS")
-            frameType = "LPS";
-            return;
-        else
-            frameType = "ESH";
-            return;
-        end
     case "ESH"
         filtered_samples = filter(b,a,nextframeT,[],1);
         
@@ -106,24 +89,25 @@ switch prevframeType
             % Increase the counters to check the next subframe
             counter_bottom = counter_bottom + 128;
             counter_top = counter_top + 128;
-        end
-        
-        % Specify the final frameType using the frame types of each channel
-        % calculated above        
-        if frameType1 == frameType2 
-            frameType = frameType1;
-            return;
-        end
-        
-        if (frameType1 == "OLS" && frameType2 == "LSS") || (frameType2 == "LSS" && frameType1 == "OLS")
-            frameType = "LSS";
-            return;
-        elseif (frameType1 == "OLS" && frameType2 == "LPS") || (frameType2 == "LPS" && frameType1 == "OLS")
-            frameType = "LPS";
-            return;
-        else
-            frameType = "ESH";
-            return;
-        end        
+        end       
+end
+
+
+% Specify the final frameType using the frame types of each channel
+% calculated above
+if frameType1 == frameType2
+    frameType = frameType1;
+    return;
+end
+if (frameType1 == "OLS" && frameType2 == "LSS") || (frameType2 == "LSS" && frameType1 == "OLS")
+    frameType = "LSS";
+    return;
+elseif (frameType1 == "OLS" && frameType2 == "LPS") || (frameType2 == "LPS" && frameType1 == "OLS")
+    frameType = "LPS";
+    return;
+else
+    frameType = "ESH";
+    return;
+end
 end
 

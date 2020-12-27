@@ -1,4 +1,4 @@
-function frameF = filterbank(frameT,frameType,winType)
+function frameT = ifilterbank(frameF,frameType,winType)
 
 N_long = 2048;
 N_short = 256;
@@ -46,33 +46,33 @@ switch frameType
         window = [zeros(448,1);win_short(1:128);ones(448,1);win_long(1025:end)];
 end
 
-z = frameT .* window;
-
-frameF = NaN(N_long/2,2);
+frameT = NaN(N_long,2);
 
 if (frameType == "ESH")
-    counter_bottom = 449;
-    counter_top = counter_bottom + 255;
+    counter_bottom = 1;
+    counter_top = counter_bottom + 127;
     counter = 1;
-    n = 0:N_short-1;
-    n = n';
+    k = 0:N_short/2-1;
+    k = k';
     n_zero = (N_short/2 + 1)/2;
     for i = 1:8
-        for k = 0:N_short/2-1
-            frameF(counter,:) = 2 .* sum(z(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
+        for n = 0:N_short/2-1
+            frameT(counter,:) = 2 .* sum(frameF(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
             counter = counter + 1;
         end
         counter_bottom = counter_bottom + 128;
         counter_top = counter_top + 128;
     end
+    frameT = frameT .*window;
 else
-    n = 0:N_long-1;
-    n = n';
+
     n_zero = (N_long/2 + 1)/2;
-    for k = 0:N_long/2-1
-        frameF(k+1,:) = 2 .* sum(z .* cos(2*pi/N_long * (n + n_zero) * (k + 1/2)));
+    k = 0:N_long/2-1;
+    k = k';
+    for n = 0:N_long/2-1
+        frameT(n+1,:) = 2 .* sum(frameF .* cos(2*pi/N_long * (n + n_zero)*(k + 1/2)));
     end
+    frameT = frameT .* window;
 end
 
 end
-

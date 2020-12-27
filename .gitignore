@@ -1,3 +1,10 @@
 testing.m
 files
 *.asv
+imdct.m
+mdct.m
+test.m	
+window_creation.m
+DFT*
+test*
+frame_creation*
