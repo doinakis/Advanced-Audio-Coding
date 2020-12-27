@@ -1,16 +1,10 @@
 function AACSeq1 = AACoder1(fNameIn)
 
 [y,Fs] = audioread(fNameIn,'double');
-
+y = [zeros(1024,2);y];
 % Frame Creation 
 frame_counter = 1;
 for i = 1:1024:size(y,1)
-    if i == 1 
-        frame1(:,frame_counter)=[zeros(1024,1);y(1:1024,1)];
-        frame2(:,frame_counter)=[zeros(1024,1);y(1:1024,2)];
-        frame_counter = frame_counter + 1;
-        continue;
-    end
     if i+2047 > size(y,1)
         frame1(1:2048,frame_counter) = [y(i:end,1);zeros(i+2047-size(y,1),1)];
         frame2(1:2048,frame_counter) = [y(i:end,2);zeros(i+2047-size(y,1),1)];

@@ -5,10 +5,10 @@ frame2 = NaN(2048,length(AACSeq1));
 x1 = NaN(1024,1);
 x2 = NaN(1024,1);
 for i = 1:length(AACSeq1)
-    if AACSeq1(i).frameType == "ESH"
-        frameF = [AACSeq1(i).chl.frameF AACSeq1(i).chr.frameF];
+    if AACSeq1(i,1).frameType == "ESH"
+        frameF = [AACSeq1(i,1).chl.frameF AACSeq1(i,1).chr.frameF];
         frameF = reshape(frameF,[],1);
-        frameT = ifilterbank(frameF,AACSeq1(i).frameType,AACSeq1(i).winType);
+        frameT = ifilterbank(frameF,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
         frame1(:,i) = frameT(:,1);
         frame2(:,i) = frameT(:,2);
         if i == 1
@@ -23,7 +23,7 @@ for i = 1:length(AACSeq1)
         x1 = [x1;frame1(1025:end,1)];
         x2 = [x2;frame2(1025:end,2)];
     else
-        frameT = ifilterbank([AACSeq1(i).chl.frameF AACSeq1(i).chr.frameF],AACSeq1(i).frameType,AACSeq1(i).winType);
+        frameT = ifilterbank([AACSeq1(i,1).chl.frameF AACSeq1(i,1).chr.frameF],AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
         frame1(:,i) = frameT(:,1);
         frame2(:,i) = frameT(:,2);
         if i == 1
@@ -38,6 +38,6 @@ for i = 1:length(AACSeq1)
     end
 end
 x = [x1 x2];
-audiowrite('attempt3.wav',x,48000);
+audiowrite(fNameOut,x,48000);
 end
 
