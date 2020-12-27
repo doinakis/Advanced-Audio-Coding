@@ -56,7 +56,7 @@ if (frameType == "ESH")
     k = k';
     n_zero = (N_short/2 + 1)/2;
     for i = 1:8
-        for n = 0:N_short/2-1
+        for n = 0:N_short-1
             frameT(counter,:) = 2 .* sum(frameF(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
             counter = counter + 1;
         end
@@ -69,7 +69,7 @@ else
     n_zero = (N_long/2 + 1)/2;
     k = 0:N_long/2-1;
     k = k';
-    for n = 0:N_long/2-1
+    for n = 0:N_long-1
         frameT(n+1,:) = 2 .* sum(frameF .* cos(2*pi/N_long * (n + n_zero)*(k + 1/2)));
     end
     frameT = frameT .* window;
