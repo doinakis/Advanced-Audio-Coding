@@ -31,7 +31,7 @@ switch prevframeType
         attack_values = NaN(7,2);
         s_values = NaN(8,2);
         counter = 1;
-        counter_bottom = 550 + 127;
+        counter_bottom = 449 + 128;
         counter_top = counter_bottom + 127;        
         frameType1 = "OLS";
         frameType2 = "OLS";
@@ -42,7 +42,7 @@ switch prevframeType
         for i = 1:8 
             s_values(i,:) = sum(filtered_samples(counter_bottom:counter_top,:).^2);
             if i > 1 
-                attack_values(i-1,:) = (counter + 1) * s_values(i,:)./sum(s_values(1:counter,:),1);
+                attack_values(i-1,:) = (counter) * s_values(i,:)./sum(s_values(1:counter,:),1);
                 counter = counter + 1;
                 
                 % Check for every channel if the nextframe is ESH
@@ -65,7 +65,7 @@ switch prevframeType
         attack_values = NaN(7,2);
         s_values = NaN(8,2);
         counter = 1;
-        counter_bottom = 550 + 127;
+        counter_bottom = 449 + 128;
         counter_top = counter_bottom + 127;
         frameType1 = "LPS";
         frameType2 = "LPS";
@@ -74,7 +74,7 @@ switch prevframeType
         for i = 1:8 
             s_values(i,:) = sum(filtered_samples(counter_bottom:counter_top,:).^2);
             if i > 1 
-                attack_values(i-1,:) = (counter + 1) * s_values(i,:)./sum(s_values(1:counter,:),1);
+                attack_values(i-1,:) = (counter) * s_values(i,:)./sum(s_values(1:counter,:),1);
                 counter = counter + 1;
                 
                 % Check for every channel if the nextframe is ESH
@@ -99,10 +99,10 @@ if frameType1 == frameType2
     frameType = frameType1;
     return;
 end
-if (frameType1 == "OLS" && frameType2 == "LSS") || (frameType2 == "LSS" && frameType1 == "OLS")
+if (frameType1 == "OLS" && frameType2 == "LSS") || (frameType1 == "LSS" && frameType2 == "OLS")
     frameType = "LSS";
     return;
-elseif (frameType1 == "OLS" && frameType2 == "LPS") || (frameType2 == "LPS" && frameType1 == "OLS")
+elseif (frameType1 == "OLS" && frameType2 == "LPS") || (frameType1 == "LPS" && frameType2 == "OLS")
     frameType = "LPS";
     return;
 else

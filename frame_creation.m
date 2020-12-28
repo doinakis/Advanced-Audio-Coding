@@ -3,7 +3,10 @@ clear
 
 [y,Fs] = audioread('./files/LicorDeCalandraca.wav','double');
 frame_counter = 1;
+frame1 = NaN(2048,ceil(size(y,1)/1024));
+frame2 = NaN(2048,ceil(size(y,1)/1024));
 y = [zeros(1024,2);y];
+
 for i = 1:1024:size(y,1)
     if i+2047 > size(y,1)
         frame1(1:2048,frame_counter) = [y(i:end,1);zeros(i+2047-size(y,1),1)];
@@ -15,11 +18,11 @@ for i = 1:1024:size(y,1)
     frame_counter = frame_counter + 1;
 end
 
-frameTypes = strings(276,1);
-for i = 1:276
+frameTypes = strings(frame_counter,1);
+for i = 1:frame_counter
     frameT = [frame1(:,i) frame2(:,i)];
     
-    if i == 276 
+    if i == frame_counter 
         nextframeT = zeros(2048,2);
     else
         nextframeT = [frame1(:,i+1) frame2(:,i+1)];
@@ -32,7 +35,5 @@ for i = 1:276
     prevframeType = frameTypes(i-1);
     frameTypes(i) = SSC(frameT,nextframeT,prevframeType);
 end
-signal = [];
-for i = 1:276
-    signal =[signal;frame1(:,i) frame2(:,i)];
-end
+
+clearvars  frame_counter i prevframeType frameT frame_counter y;
