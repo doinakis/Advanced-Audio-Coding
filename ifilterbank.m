@@ -1,3 +1,19 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Doinakis Michail
+% doinakis@ece.auth.gr
+% 9292
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Function that implements the inverse filterbank. It returns the frame
+% in time with coefficients frameF. It contains a 2048-by-2 array. If the
+% frame its ESH the first and last 448 elements ara zero padded.
+% Where:
+% frameT: The frame in time
+% frameType: The type of the frame (OLS,LPS,LSS,ESH)
+% winType: The type of the window to be applied (SIN,KBD)
+%%
 function frameT = ifilterbank(frameF,frameType,winType)
 
 % Define the sizes of long and short windows

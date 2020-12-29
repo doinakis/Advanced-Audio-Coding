@@ -1,7 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Doinakis Michail
+% doinakis@ece.auth.gr
+% 9292
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Function that implements the inverse AACoder. x is the output signal.
+% The output signal is stored with Fs = 40kHz and has 2 channels 
+% Where:
+% ACCSeq1: The struct that contains the frameType,winType,chl.frameF 
+%   (the left channels mdct coefficients), chr.frameF (the right channels mdct coefficients)
+% fnameOut: The desirable output file name 
+%%
 function x = iAACoder1(AACSeq1,fNameOut)
 
 % Initialize empty signal x 
-y = NaN(length(AACSeq1)*1024,2);
+signal = NaN(length(AACSeq1)*1024,2);
 
 % Counter that helps reconstruct the initial signal
 counter = 1025;
@@ -22,32 +36,28 @@ for i = 1:length(AACSeq1)
     % If its the first iteration then the singal x is set to be the whole
     % first frame
     if i == 1
-        y(1:2048,:) = frameT;
+        signal(1:2048,:) = frameT;
         continue;
     end
     
     % If its not the first iteration then the first 1024 elements are added
     % to the previous frame's last 1024 elements  
-    y(counter:counter+1023,:) = y(counter:counter+1023,:) + frameT(1:1024,:);
+    signal(counter:counter+1023,:) = signal(counter:counter+1023,:) + frameT(1:1024,:);
     counter = counter + 1024;
     
     % The other half of the frame is assinged to the next 1024 of the
     % singal
-    y(counter:counter+1023,:) = frameT(1025:end,:);
+    signal(counter:counter+1023,:) = frameT(1025:end,:);
 end
 
+signal = signal(1025:end,:);
 % Write the audio file
-audiowrite(fNameOut,y,48000);
+audiowrite(fNameOut,signal,48000);
+
 % Return the signal values to variable x
 if nargout == 1
-    x = y;
+    x = signal;
 end
 
-global frameSNR frame1 frame2
-frameSNR = zeros(length(AACSeq1),1);
-
-for i = 1:length(AACSeq1)
-    frameSNR(i) = snr([frame1(:,i) frame2(:,i)],x((1024*(i-1)+1):(1024*(i+1)),:) - [frame1(:,i) frame2(:,i)]); 
-end
 end
 

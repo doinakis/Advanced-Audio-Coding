@@ -1,5 +1,11 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Doinakis Michail
+% doinakis@ece.auth.gr
+% 9292
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% function that calculates the i-th frames type based on the previous frame
+% Function that calculates the i-th frames type based on the previous frame
 % and the next frame. It returns the frame type as follows
 % "OLS" = ONLY_LONG_SEQUENCE
 % "LSS" = LONG_START_SEQUENCE

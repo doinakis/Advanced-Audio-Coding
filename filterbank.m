@@ -1,3 +1,18 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Doinakis Michail
+% doinakis@ece.auth.gr
+% 9292
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Function that implements the filterbank. It returns the mdct coefficients
+% of frameT. If the frame is ESH then the frameT contains 8 128-by-2
+% matrices (added in columns), otherwise is contains a 1024-by-2.
+% Where:
+% frameT: The current frame to calculate its coefficients
+% frameType: The type of the frame (OLS,LPS,LSS,ESH)
+% winType: The type of the window to be applied (SIN,KBD)
+%%
 function frameF = filterbank(frameT,frameType,winType)
 
 % Define the sizes of long and short windows
@@ -24,7 +39,7 @@ switch winType
         win_left = NaN(N_short/2,1);
         win_right = NaN(N_short/2,1);
         a = 6;
-        w = kaiser(N_short/2+1,pi*a);
+        w = kaiser(N_short/2 +1 ,pi*a);
         w_sum = sum(w);
         for n = 1:N_short/2
             win_left(n) = sqrt(sum(w(1:n))/w_sum);
