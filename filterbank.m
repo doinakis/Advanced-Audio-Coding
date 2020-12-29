@@ -77,6 +77,13 @@ if (frameType == "ESH")
         counter_bottom = counter_bottom + 256;
         counter_top = counter_top + 256;
     end
+    
+    temp1 = reshape(frameF(:,1),[128,8]);
+    temp2 = reshape(frameF(:,2),[128,8]);
+    frameF = [];
+    for i = 1:8
+        frameF = [frameF temp1(:,i) temp2(:,i)];
+    end
 else
     % Apply the window to the current frame
     z = frameT .* window;

@@ -2,6 +2,7 @@ function AACSeq1 = AACoder1(fNameIn)
 
 % Read the audio signal from the input
 y = audioread(fNameIn,'double');
+global frame1 frame2
 
 % Preallocate the space for the frames 
 AACSeq1(ceil(size(y,1)/1024),1) = struct();
@@ -29,9 +30,9 @@ for i = 1:1024:size(y,1)
     frame_counter = frame_counter + 1;
 end
 
-
 % For every frame apply the AAC coding process
 for i = 1:frame_counter
+    
     % Make a dual channel frame from frame1 and frame2
     frameT = [frame1(:,i) frame2(:,i)];
     
@@ -59,14 +60,15 @@ for i = 1:frame_counter
     
     AACSeq1(i,1).frameType = SSC(frameT,nextframeT,AACSeq1(i-1,1).frameType);
     AACSeq1(i,1).winType = "SIN";
+    
     % Apply the filterbank
     frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
     
     % If the frame type was ESH reshape the data to be 128-by-8 array
     % and assing to the corresponding channel
     if AACSeq1(i,1).frameType == "ESH"
-        AACSeq1(i,1).chl.frameF = reshape(frameF(:,1),[128,8]);
-        AACSeq1(i,1).chr.frameF = reshape(frameF(:,2),[128,8]);
+        AACSeq1(i,1).chl.frameF = frameF(:,1:2:15);
+        AACSeq1(i,1).chr.frameF = frameF(:,2:2:16);
     else
         AACSeq1(i,1).chl.frameF = frameF(:,1);
         AACSeq1(i,1).chr.frameF = frameF(:,2);

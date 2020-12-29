@@ -53,12 +53,19 @@ end
 frameT = NaN(N_long,2);
 
 if (frameType == "ESH")
+    % If the frame is eight short then calculate the inverse mdct for every
+    % sub frame add the overlapping parts of the frames and then zero pad
+    % at the beginning and at the end 
+    temp = frameF;
+    frameF = [];
+    frameF = [reshape(temp(:,1:2:15),[],1) reshape(temp(:,2:2:16),[],1)];
     counter_bottom = 1;
     counter_top = counter_bottom + 127;
     counter = 1;
     k = 0:N_short/2-1;
     k = k';
     n_zero = (N_short/2 + 1)/2;
+    
     for i = 1:8
         for n = 0:N_short-1
             frameT(counter,:) = 2/N_short .* sum(frameF(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
@@ -67,25 +74,29 @@ if (frameType == "ESH")
         counter_bottom = counter_bottom + 128;
         counter_top = counter_top + 128;
     end
-    frameT = frameT .*window;
+    
+    frameT = frameT .* window;
+    
     channel1 = reshape(frameT(:,1),[256,8]);
     channel2 = reshape(frameT(:,2),[256,8]);
-    total1 = zeros(448,1);
-    total2 = zeros(448,1);
-    total1 = [total1;channel1(:,1)];
-    total2 = [total2;channel2(:,2)];
-
-    for i = 2:8
-        total1 = [total1; channel1(129:129 + 127,i-1) + channel1(1:128,i)];
-        total2 = [total2; channel2(129:129 + 127,i-1) + channel2(1:128,i)];
+    total1 = zeros(2048,1);
+    total2 = zeros(2048,1);
+    counter_bottom = 449 + 128;
+    total1(449:449+255) = channel1(:,1);
+    total2(449:449+255) = channel2(:,1);
+    % Add the overlapping parts 
+    for i = 1:7 
+        total1(counter_bottom:counter_bottom+127) = total1(counter_bottom:counter_bottom+127) + channel1(1:128,i+1);
+        total2(counter_bottom:counter_bottom+127) = total2(counter_bottom:counter_bottom+127) + channel2(1:128,i+1);
+        counter_bottom = counter_bottom + 128;
+        total1(counter_bottom:counter_bottom+127) = channel1(129:end,i+1);
+        total2(counter_bottom:counter_bottom+127) = channel2(129:end,i+1);
     end
     
-    total1 = [total1;zeros(448,1)];
-    total2 = [total2;zeros(448,1)];
     frameT = [total1 total2];
-    
 else
-
+    % For every other frame just calculate the inverse mdct and multiply
+    % the result with the corresponding window
     n_zero = (N_long/2 + 1)/2;
     k = 0:N_long/2-1;
     k = k';

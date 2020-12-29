@@ -1,5 +1,3 @@
-clc 
-clear
 
 [y,Fs] = audioread('./files/LicorDeCalandraca.wav','double');
 frame_counter = 1;
