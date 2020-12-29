@@ -25,7 +25,7 @@ switch winType
         % Create Wl window
         win_left = NaN(N_long/2,1);
         win_right = NaN(N_long/2,1);
-        a = 4;
+        a = 6;
         % Compute the w(n) and calculate the sum of its values
         w = kaiser(N_long/2 + 1,pi*a);
         w_sum = sum(w);
@@ -38,7 +38,7 @@ switch winType
         % Create Ws window
         win_left = NaN(N_short/2,1);
         win_right = NaN(N_short/2,1);
-        a = 6;
+        a = 4;
         w = kaiser(N_short/2 +1 ,pi*a);
         w_sum = sum(w);
         for n = 1:N_short/2
