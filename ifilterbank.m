@@ -56,9 +56,7 @@ if (frameType == "ESH")
     % If the frame is eight short then calculate the inverse mdct for every
     % sub frame add the overlapping parts of the frames and then zero pad
     % at the beginning and at the end 
-    temp = frameF;
-    frameF = [];
-    frameF = [reshape(temp(:,1:2:15),[],1) reshape(temp(:,2:2:16),[],1)];
+    frameF = [reshape(frameF(:,1:2:15),[],1) reshape(frameF(:,2:2:16),[],1)];
     counter_bottom = 1;
     counter_top = counter_bottom + 127;
     counter = 1;
