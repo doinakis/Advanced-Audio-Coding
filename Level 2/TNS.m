@@ -113,9 +113,15 @@ TNScoeffs = minimum + I .* delta;
 % Apply the filter H(z) = 1-a(1)*z^(-1) - ... - a(4)*z^(-4).
 if frameType == "ESH"
     for i = 1:8
+        if ~isstable(1,[1;-TNScoeffs(:,i)])
+            disp('ERROR');
+        end
         frameFout(:,i) = filter([1;-TNScoeffs(:,i)],1,frameFin(:,i),[],1);
     end
 else
+    if ~isstable(1,[1;-TNScoeffs])
+        disp('ERROR');
+    end
     frameFout = filter([1;-TNScoeffs],1,frameFin,[],1);
 end
 
