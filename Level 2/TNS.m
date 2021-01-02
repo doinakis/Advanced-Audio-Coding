@@ -102,10 +102,10 @@ end
 % Quantization of the coefficients so that the inverse filter can be
 % applied 
 % Quantization using R = 4 bits quantizer with 0.1 step
-minimum = -0.85;
+minimum = -0.8;
 L = 2^4;
 delta = 0.1;
-I  = floor((a-minimum)./delta);
+I  = round((a-minimum)./delta);
 I(I >= L) = L-1;
 I(I<0) = 0;
 TNScoeffs = minimum + I .* delta;

@@ -20,7 +20,7 @@ function AACSeq2 = AACoder2(fNameIn)
 y = audioread(fNameIn,'double');
 
 % The window type 
-window_type = "KBD";
+window_type = "SIN";
 
 % Preallocate the space for the frames 
 AACSeq2(ceil(size(y,1)/1024),1) = struct();

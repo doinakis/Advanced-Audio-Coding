@@ -19,7 +19,7 @@ function AACSeq1 = AACoder1(fNameIn)
 y = audioread(fNameIn,'double');
 
 % The window type 
-window_type = "KBD";
+window_type = "SIN";
 
 % Preallocate the space for the frames 
 AACSeq1(ceil(size(y,1)/1024),1) = struct();
@@ -61,7 +61,7 @@ for i = 1:frame_counter
         nextframeT = [frame1(:,i+1) frame2(:,i+1)];
     end
     
-    % For the first frame assum that the previous one is OLS type
+    % For the first frame assume that the previous one is OLS type
     if i == 1
         AACSeq1(i,1).frameType = SSC(frameT,nextframeT,"OLS");
         AACSeq1(i,1).winType = window_type;

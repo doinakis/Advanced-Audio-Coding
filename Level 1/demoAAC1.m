@@ -17,7 +17,7 @@ function SNR = demoAAC1(fNameIn, fNameOut)
 % Read the initial signal to calculate the SNR 
 y = audioread(fNameIn,'double');
 
-% Zero pad at the start of the signal
+% Zero pad at the end of the signal
 y = [y;zeros(1024,2)];
 
 % Apply the AAC and inverse AAC 

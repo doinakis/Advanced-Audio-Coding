@@ -1,3 +1,5 @@
+*.tmp
+*.docx
 other
 *.wav
 testing.m
