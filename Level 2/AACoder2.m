@@ -13,7 +13,7 @@
 % fNameIn: The path (or the name if its in the same folder) of the .wav
 % file
 %%
-function AACSeq1 = AACoder1(fNameIn)
+function AACSeq2 = AACoder2(fNameIn)
 
 % Read the audio signal from the input
 y = audioread(fNameIn,'double');
@@ -22,7 +22,7 @@ y = audioread(fNameIn,'double');
 window_type = "KBD";
 
 % Preallocate the space for the frames 
-AACSeq1(ceil(size(y,1)/1024),1) = struct();
+AACSeq2(ceil(size(y,1)/1024),1) = struct();
 
 % Helping variables to create the 50% overlapping
 % one for each channel
@@ -63,33 +63,33 @@ for i = 1:frame_counter
     
     % For the first frame assum that the previous one is OLS type
     if i == 1
-        AACSeq1(i,1).frameType = SSC(frameT,nextframeT,"OLS");
-        AACSeq1(i,1).winType = window_type;
-        frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
-        if AACSeq1(i,1).frameType == "ESH"
-            AACSeq1(i,1).chl.frameF = frameF(:,1:2:15);
-            AACSeq1(i,1).chr.frameF = frameF(:,2:2:16);
+        AACSeq2(i,1).frameType = SSC(frameT,nextframeT,"OLS");
+        AACSeq2(i,1).winType = window_type;
+        frameF = filterbank(frameT,AACSeq2(i,1).frameType,AACSeq2(i,1).winType);
+        if AACSeq2(i,1).frameType == "ESH"
+            [AACSeq2(i,1).chl.frameF,AACSeq2(i,1).chl.TNScoeffs] = TNS(frameF(:,1:2:15),AACSeq2(i,1).frameType);
+            [AACSeq2(i,1).chr.frameF,AACSeq2(i,1).chr.TNScoeffs] = TNS(frameF(:,2:2:16),AACSeq2(i,1).frameType);
         else
-            AACSeq1(i,1).chl.frameF = frameF(:,1);
-            AACSeq1(i,1).chr.frameF = frameF(:,2);
+            [AACSeq2(i,1).chl.frameF,AACSeq2(i,1).chl.TNScoeffs] = TNS(frameF(:,1),AACSeq2(i,1).frameType);
+            [AACSeq2(i,1).chr.frameF,AACSeq2(i,1).chr.TNScoeffs] = TNS(frameF(:,2),AACSeq2(i,1).frameType);
         end
         continue;
     end
     
-    AACSeq1(i,1).frameType = SSC(frameT,nextframeT,AACSeq1(i-1,1).frameType);
-    AACSeq1(i,1).winType = window_type;
+    AACSeq2(i,1).frameType = SSC(frameT,nextframeT,AACSeq2(i-1,1).frameType);
+    AACSeq2(i,1).winType = window_type;
     
     % Apply the filterbank
-    frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
+    frameF = filterbank(frameT,AACSeq2(i,1).frameType,AACSeq2(i,1).winType);
     
     % If the frame type was ESH reshape the data to be 128-by-8 array
     % and assing to the corresponding channel
-    if AACSeq1(i,1).frameType == "ESH"
-        AACSeq1(i,1).chl.frameF = frameF(:,1:2:15);
-        AACSeq1(i,1).chr.frameF = frameF(:,2:2:16);
+    if AACSeq2(i,1).frameType == "ESH"
+        [AACSeq2(i,1).chl.frameF,AACSeq2(i,1).chl.TNScoeffs] = TNS(frameF(:,1:2:15),AACSeq2(i,1).frameType);
+        [AACSeq2(i,1).chr.frameF,AACSeq2(i,1).chr.TNScoeffs] = TNS(frameF(:,2:2:16),AACSeq2(i,1).frameType);
     else
-        AACSeq1(i,1).chl.frameF = frameF(:,1);
-        AACSeq1(i,1).chr.frameF = frameF(:,2);
+        [AACSeq2(i,1).chl.frameF,AACSeq2(i,1).chl.TNScoeffs] = TNS(frameF(:,1),AACSeq2(i,1).frameType);
+        [AACSeq2(i,1).chr.frameF,AACSeq2(i,1).chr.TNScoeffs] = TNS(frameF(:,2),AACSeq2(i,1).frameType);
     end
 
 end

@@ -1,0 +1,15 @@
+a = -1:0.001:1;
+minimum = -0.85;
+maximum = 0.75;
+L = 2^4;
+delta = 0.1;
+I  = floor((a-minimum)./delta);
+I(I >= L) = L-1;
+I(I<0) = 0;
+pq = minimum + I .* delta;
+plot(a,pq);
+hold on;
+plot(zeros(length(-1:0.1:1),1),-1:0.1:1);
+plot(minimum*ones(length(-1:0.1:1),1),-1:0.1:1,'.-');
+plot(maximum*ones(length(-1:0.1:1),1),-1:0.1:1,'.-');
+title("4 bit symmetric quantizer with 0.1 step");
