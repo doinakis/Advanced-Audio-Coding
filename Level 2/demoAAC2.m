@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%--------------- Implements Level 2 of the Assignment (TNS) ---------------
 % Function that calculates the SNR from the input signal and the one that 
 % was produced by the AACoder and iAACoder.
 % Where:
@@ -20,7 +21,7 @@ y = audioread(fNameIn,'double');
 % Zero pad at the start of the signal
 y = [y;zeros(1024,2)];
 
-% Apply the AAC and inverse AAC 
+% Apply the AAC2 and inverse AAC2
 AACSeq2 = AACoder2(fNameIn);
 x = iAACoder2(AACSeq2,fNameOut);
 

@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%--------------- Implements Level 2 of the Assignment (TNS) ---------------
 % Function that implements the inverse AACoder. x is the output signal.
 % The output signal is stored with Fs = 40kHz and has 2 channels 
 % Where:
@@ -23,6 +24,7 @@ counter = 1025;
 % For every frame in the struct
 for i = 1:length(AACSeq2)
     
+    % First apply the inverse TNS to each frame
     frameFout_left = iTNS(AACSeq2(i,1).chl.frameF,AACSeq2(i,1).frameType,AACSeq2(i,1).chl.TNScoeffs);
     frameFout_right = iTNS(AACSeq2(i,1).chr.frameF,AACSeq2(i,1).frameType,AACSeq2(i,1).chr.TNScoeffs);
     
@@ -30,8 +32,9 @@ for i = 1:length(AACSeq2)
      if AACSeq2(i,1).frameType == "ESH"
         frameF(:,1:2:15) = frameFout_left;
         frameF(:,2:2:16) = frameFout_right;
-    end 
-    % Apply the inverse filterbank to the corresponding frame
+     end 
+    
+    % Then inverse filterbank to the corresponding frame
     frameT = ifilterbank(frameF,AACSeq2(i,1).frameType,AACSeq2(i,1).winType);
     
     % If its the first iteration then the singal x is set to be the whole

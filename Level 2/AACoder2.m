@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%--------------- Implements Level 2 of the Assignment (TNS) ---------------
 % Function that calculates the coded frames and returns a K-by-1 srtuct
 % with the frameType,winType,chl.frameF (the left channels mdct coefficients),
 % chr.frameF (the right channels mdct coefficients). If the frame is ESH
@@ -61,8 +62,9 @@ for i = 1:frame_counter
         nextframeT = [frame1(:,i+1) frame2(:,i+1)];
     end
     
-    % For the first frame assum that the previous one is OLS type
+    % For the first frame assume that the previous one is OLS type
     if i == 1
+        % Apply the SSC, filterbank and lastly the TNS 
         AACSeq2(i,1).frameType = SSC(frameT,nextframeT,"OLS");
         AACSeq2(i,1).winType = window_type;
         frameF = filterbank(frameT,AACSeq2(i,1).frameType,AACSeq2(i,1).winType);
@@ -75,7 +77,7 @@ for i = 1:frame_counter
         end
         continue;
     end
-    
+    % Apply the SSC, filterbank and lastly the TNS 
     AACSeq2(i,1).frameType = SSC(frameT,nextframeT,AACSeq2(i-1,1).frameType);
     AACSeq2(i,1).winType = window_type;
     
