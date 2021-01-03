@@ -115,14 +115,12 @@ if frameType == "ESH"
     for i = 1:8
         if ~isstable(1,[1;-TNScoeffs(:,i)])
             disp('ERROR: Filter not reversable');
-            exit(1);
         end
         frameFout(:,i) = filter([1;-TNScoeffs(:,i)],1,frameFin(:,i),[],1);
     end
 else
     if ~isstable(1,[1;-TNScoeffs])
         disp('ERROR: Filter not reversable');
-        exit(1);
     end
     frameFout = filter([1;-TNScoeffs],1,frameFin,[],1);
 end
