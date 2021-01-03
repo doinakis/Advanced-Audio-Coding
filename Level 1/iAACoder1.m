@@ -27,6 +27,7 @@ for i = 1:length(AACSeq1)
     frameF = [AACSeq1(i,1).chl.frameF AACSeq1(i,1).chr.frameF];
     
     if AACSeq1(i,1).frameType == "ESH"
+        % If the frame is ESH make the frame 128-by-16
         frameF(:,1:2:15) = AACSeq1(i,1).chl.frameF;
         frameF(:,2:2:16) = AACSeq1(i,1).chr.frameF;
     end
@@ -50,7 +51,9 @@ for i = 1:length(AACSeq1)
     signal(counter:counter+1023,:) = frameT(1025:end,:);
 end
 
+% Ignore the first 1024 samples that were zero padded
 signal = signal(1025:end,:);
+
 % Write the audio file
 audiowrite(fNameOut,signal,48000);
 
