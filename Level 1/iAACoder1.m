@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------- Implements Level 1 of the Assignment (SSC & filterbank) --------
 % Function that implements the inverse AACoder. x is the output signal.
 % The output signal is stored with Fs = 40kHz and has 2 channels 
 % Where:

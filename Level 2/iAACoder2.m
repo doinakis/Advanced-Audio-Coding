@@ -54,7 +54,9 @@ for i = 1:length(AACSeq2)
     signal(counter:counter+1023,:) = frameT(1025:end,:);
 end
 
+% Ignore the first 1024 samples that were zero padded
 signal = signal(1025:end,:);
+
 % Write the audio file
 audiowrite(fNameOut,signal,48000);
 

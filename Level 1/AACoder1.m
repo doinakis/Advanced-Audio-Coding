@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------- Implements Level 1 of the Assignment (SSC & filterbank) --------
 % Function that calculates the coded frames and returns a K-by-1 srtuct
 % with the frameType,winType,chl.frameF (the left channels mdct coefficients),
 % chr.frameF (the right channels mdct coefficients). If the frame is ESH
