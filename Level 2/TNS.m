@@ -38,10 +38,10 @@ counter = 1;
 P = NaN(length(bands),z);
 for i = 1:length(bands)
     if i == length(bands)
-        P(counter,:) = sum(frameFin((bands(i,2)):bands(i,3),:).^2);
+        P(counter,:) = sum(frameFin((bands(i,2)):bands(i,3),:).^2,1);
         continue;
     end
-    P(counter,:) = sum(frameFin((bands(i,2)):bands(i+1,2),:).^2);
+    P(counter,:) = sum(frameFin((bands(i,2)):(bands(i+1,2)-1),:).^2,1);
     counter = counter + 1;
 end
 
@@ -65,6 +65,9 @@ end
 % Smoothing of the coefficients 
 for k = n-1:-1:1
     S(k,:) = (S(k,:) + S(k+1,:))./2;
+end
+
+for k = n-1:-1:1
     S(n+1-k,:) = (S(n+1-k,:) + S(n+1-k-1,:))./2;
 end
 
