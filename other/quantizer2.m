@@ -21,12 +21,8 @@
 % xticks([-0.85:0.1:0.75])
 
 
-
-if frameType == "ESH"
-    I = NaN(4,8);
-else
-    I = NaN(4,1);
-end
+a = -1:0.001:1;
+a = a';
 minimum = -0.7;
 L = 2^4;
 delta = 0.1;
@@ -36,3 +32,5 @@ I(a>0) = I2;
 I(a<=0) = I1;
 I(I >= L-1) = L-2;
 I(I<0) = 0;
+pq = minimum + I .* delta;
+plot(a,pq)
