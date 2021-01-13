@@ -105,8 +105,8 @@ end
 % Quantization of the coefficients so that the inverse filter can be
 % applied 
 % Quantization using R = 4 bits quantizer with 0.1 step
-minimum = -0.8;
-L = 2^4;
+minimum = -0.7;
+L = 2^4 - 1;
 delta = 0.1;
 I  = round((a-minimum)./delta);
 I(I >= L) = L-1;
