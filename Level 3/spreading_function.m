@@ -1,5 +1,5 @@
 function x = spreading_function(i,j)
-
+global bval
 if i>=j
     tmpx = 3 * (bval(j)-bval(i));
 else
