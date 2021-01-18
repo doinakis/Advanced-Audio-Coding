@@ -22,7 +22,9 @@ y = audioread(fNameIn,'double');
 y = [y;zeros(1024,2)];
 
 % Check if the output name icludes the file extension
-if ~(strcmp(fNameOut(end-3:end),'.wav'))
+if length(fNameOut) < 4
+    fNameOut = strcat(fNameOut,'.wav');
+elseif ~(strcmp(fNameOut(end-3:end),'.wav'))
     fNameOut = strcat(fNameOut,'.wav');
 end
 % Apply the AAC2 and inverse AAC2
