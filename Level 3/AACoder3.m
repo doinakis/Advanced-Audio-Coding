@@ -90,12 +90,12 @@ for i = 1:frame_counter
         end
         SMR_left = psycho(frameT(:,1), AACSeq3(i,1).frameType, prevframe1(:,1), prevframe2(:,1));
         SMR_right = psycho(frameT(:,2), AACSeq3(i,1).frameType, prevframe1(:,2), prevframe2(:,2));
-        [AACSeq3(i,1).chl.S, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
+        [S_left, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
         AACSeq3(i,1).chl.T = T;
-        [AACSeq3(i,1).chr.S, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
+        [S_right, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
         AACSeq3(i,1).chr.T = T;
-        [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(AACSeq3(i,1).chl.S, huffLUT);
-        [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(AACSeq3(i,1).chr.S, huffLUT);
+        [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(S_left, huffLUT);
+        [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(S_right, huffLUT);
         AACSeq3(i,1).chl.sfc = encodeHuff(AACSeq3(i,1).chl.sfc(:), huffLUT, 12);
         AACSeq3(i,1).chr.sfc = encodeHuff(AACSeq3(i,1).chr.sfc(:), huffLUT, 12);
         continue;
@@ -119,12 +119,12 @@ for i = 1:frame_counter
     
     SMR_left = psycho(frameT(:,1), AACSeq3(i,1).frameType, prevframe1(:,1), prevframe2(:,1));
     SMR_right = psycho(frameT(:,2), AACSeq3(i,1).frameType, prevframe1(:,2), prevframe2(:,2));
-    [AACSeq3(i,1).chl.S, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
+    [S_left, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
     AACSeq3(i,1).chl.T = T;
-    [AACSeq3(i,1).chr.S, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
+    [S_right, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
     AACSeq3(i,1).chr.T = T;
-    [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(AACSeq3(i,1).chl.S, huffLUT);
-    [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(AACSeq3(i,1).chr.S, huffLUT);
+    [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(S_left, huffLUT);
+    [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(S_right, huffLUT);
     AACSeq3(i,1).chl.sfc = encodeHuff(AACSeq3(i,1).chl.sfc(:), huffLUT, 12);
     AACSeq3(i,1).chr.sfc = encodeHuff(AACSeq3(i,1).chr.sfc(:), huffLUT, 12);
 

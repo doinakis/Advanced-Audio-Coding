@@ -12,3 +12,6 @@ plot(zeros(length(-1:0.1:1),1),-1:0.1:1,'k');
 plot(-1:0.1:1,zeros(length(-1:0.1:1),1),'k');
 yticks([-0.8:0.1:0.7])
 xticks([-0.85:0.1:0.75])
+xlabel("Value");
+ylabel("Quantized value");
+title("Quantizer");

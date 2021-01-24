@@ -72,9 +72,7 @@ for i = 1:length(AACSeq3)
     % to the previous frame's last 1024 elements  
     signal(counter:counter+1023,:) = signal(counter:counter+1023,:) + frameT(1:1024,:);
     counter = counter + 1024;
-    if any(signal > 1)
-        kappa = 1;
-    end
+    
     % The other half of the frame is assinged to the next 1024 of the
     % singal
     signal(counter:counter+1023,:) = frameT(1025:end,:);
