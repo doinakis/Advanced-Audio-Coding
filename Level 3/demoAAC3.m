@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%--------------- Implements Level 2 of the Assignment (TNS) ---------------
+%------------- Implements Level 3 of the Assignment (PSYCHO) --------------
 % Function that calculates the SNR from the input signal and the one that 
 % was produced by the AACoder and iAACoder.
 % Where:
@@ -13,7 +13,7 @@
 % file
 % fnameOut: The desirable output file name 
 %%
-function SNR = demoAAC2(fNameIn, fNameOut)
+function [SNR, bitrate, compression] = demoAAC3(fNameIn, fNameOut, fnameAACoded)
 
 % Read the initial signal to calculate the SNR 
 y = audioread(fNameIn,'double');
@@ -27,10 +27,17 @@ if length(fNameOut) < 4
 elseif ~(strcmp(fNameOut(end-3:end),'.wav'))
     fNameOut = strcat(fNameOut,'.wav');
 end
-% Apply the AAC2 and inverse AAC2
-AACSeq2 = AACoder2(fNameIn);
-x = iAACoder2(AACSeq2,fNameOut);
 
+% Check if the output name icludes the file extension
+if length(fnameAACoded) < 4
+    fnameAACoded = strcat(fnameAACoded,'.mat');
+elseif ~(strcmp(fnameAACoded(end-3:end),'.mat'))
+    fnameAACoded = strcat(fnameAACoded,'.mat');
+end
+
+% Apply the AAC3 and inverse AAC3
+AACSeq3 = AACoder3(fNameIn, fnameAACoded);
+x = iAACoder3(AACSeq3,fNameOut);
 % Calculate the SNR of the signal
 SNR = snr(y,x(1:length(y),:) - y);
 
