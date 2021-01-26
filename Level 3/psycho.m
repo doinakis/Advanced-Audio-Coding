@@ -18,7 +18,7 @@ function SMR = psycho(frameT, frameType, frameTprev1, frameTprev2)
 persistent rw_1 rw_2 fw_1 fw_2 spreading_func_ESH spreading_func_OTHER
 persistent q_hat_long q_hat_short hann_long hann_short
 
-global bval long_bands short_bands
+global long_bands short_bands
 
 if isempty(spreading_func_ESH) || isempty(spreading_func_OTHER)
     qsthr_long =  long_bands(:,6);
@@ -26,15 +26,15 @@ if isempty(spreading_func_ESH) || isempty(spreading_func_OTHER)
     q_hat_long = eps * 1024 * 10.^(qsthr_long ./ 10);
     q_hat_short = eps * 128 * 10.^(qsthr_short ./ 10);
     bval = long_bands(:,5);
-    for i = 1:length(bval)
-        for ii = 1:length(bval)
-            spreading_func_OTHER(ii,i) = spreading_function(ii,i);
+    for ii = 1:length(bval)
+        for i = 1:length(bval)
+            spreading_func_OTHER(ii,i) = spreading_function(ii,i,bval);
         end
     end
     bval = short_bands(:,5);
-    for i = 1:length(bval)
-        for ii = 1:length(bval)
-            spreading_func_ESH(ii,i) = spreading_function(ii,i);
+    for ii = 1:length(bval)
+        for i = 1:length(bval)
+            spreading_func_ESH(ii,i) = spreading_function(ii,i,bval);
         end
     end
     N = 256;
@@ -257,8 +257,7 @@ end
 % i: the band that causes the spreading 
 % j: the band that the spreading affects
 %%
-function x = spreading_function(i,j)
-global bval
+function x = spreading_function(i,j,bval)
 if i>=j
     tmpx = 3 * (bval(j)-bval(i));
 else
@@ -266,7 +265,7 @@ else
 end
 
 tmpz = 8 * min((tmpx-0.5)^2 - 2*(tmpx-0.5),0);
-tmpy = 15.811389 + 7.5 * (tmpx+0.474) - 17.5 * (1+(tmpx+0.474)^2)^1/2;
+tmpy = 15.811389 + 7.5 * (tmpx+0.474) - 17.5 * (1+(tmpx+0.474)^2)^(1/2);
 
 if tmpy<-100
     x = 0;
