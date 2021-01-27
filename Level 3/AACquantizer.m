@@ -34,7 +34,7 @@ switch frameType
         T = P ./ SMR;
         
         % Initial estimation of the scalefactor gain 
-        a_hat = floor((16/3) * log2((max(frameF,[],1).^(3/4))/MQ));
+        a_hat = (16/3) * log2((max(frameF,[],1).^(3/4))/MQ);
         a = a_hat .* ones(length(short_bands),1);
         a_all = NaN(length(short_bands),8);
         for b = 1:length(short_bands)
@@ -50,10 +50,13 @@ switch frameType
         end
 
         for i = 1:8
-            % Check it again 
-            while(any(Pe(:,i) - T(:,i) < 0))
+            
+            a(Pe(:,i) <= T(:,i)) = a(Pe(:,i) <= T(:,i)) + 1;
+            stop_increasing = false(42,1);
 
-                a(Pe(:,i) < T(:,i),i) = a(Pe(:,i) < T(:,i),i) + 1;
+            while(any((Pe(:,i) <= T(:,i)) - stop_increasing))
+
+                stop_increasing = stop_increasing | (Pe(:,i) > T(:,i));
                 
                 for b = 1:length(short_bands)
                     a_all(short_bands(b,2):short_bands(b,3),i) = repmat(a(b,i),length(short_bands(b,2):short_bands(b,3)),1);
@@ -69,25 +72,24 @@ switch frameType
                 for b = 1:length(short_bands)
                     Pe(b,i) = sum((frameF(short_bands(b,2):short_bands(b,3),i)- X_hat(short_bands(b,2):short_bands(b,3),i)).^2);       
                 end
+                
+                index = (Pe(:,i) <= T(:,i)) - stop_increasing;
+                index(index<0) = 0;
+                index = logical(index);
+                a(index,i) = a(index,i) + 1;
+                a(Pe(:,i) > T(:,i),i) = a(Pe(:,i) > T(:,i),i) - 1; 
                 % If the distance between a(b+1) - a(b) > 60 then we stop increasing
                 % the a values
                 if max(abs(a(1:end-1,i) - a(2:end,i))) > 60
-                    a(Pe(:,i) < T(:,i),i) = a(Pe(:,i) < T(:,i),i) - 1;
-                    for b = 1:length(short_bands)
-                        a_all(short_bands(b,2):short_bands(b,3),i) = repmat(a(b,i),length(short_bands(b,2):short_bands(b,3)),1);
-                    end
-
-                    % Calculate the quantized symbols
-                    S(:,i) = sign(frameF(:,i)) .* fix((abs(frameF(:,i)) .* 2.^(-a_all(:,i)/4)).^(3/4) + MagicNumber);
+                    a(index,i) = a(index,i) - 1;
                     break;
                 end
             end     
         end
         S = S(:);
         % Global gain
-        G = a(1,1:8) - 10;
-        sfc = a(2:end,:) - a(1:end-1,:);
-        sfc = [G;sfc];
+        G = fix(a(1,1:8));
+        sfc = round(a(2:end,:) - a(1:end-1,:));
         
     otherwise
         
@@ -99,7 +101,7 @@ switch frameType
         T = P ./ SMR;
         
         % Initial estimation of the scalefactor gain 
-        a_hat = floor((16/3) * log2(max(frameF).^(3/4)/MQ));
+        a_hat = (16/3) * log2(max(frameF).^(3/4)/MQ);
         a = a_hat .* ones(length(long_bands),1);
         
         % Calculate the quantized symbol for every MDCT coefficient
@@ -115,11 +117,12 @@ switch frameType
             Pe(b,1) = sum((frameF(long_bands(b,2):long_bands(b,3))- X_hat(long_bands(b,2):long_bands(b,3))).^2);       
         end
         
+        a(Pe <= T) = a(Pe <= T) + 1;
+        stop_increasing = false(69,1);
         % If the quantization erro is less than the acoustics threshold
-        while(any(Pe < T))
-
-            % Increase the scalefactors that there energy is less by one
-            a(Pe < T) = a(Pe < T) + 1;
+        while(any((Pe <= T) - stop_increasing))
+            
+            stop_increasing = stop_increasing | (Pe > T);
             
             for b = 1:length(long_bands)
                 a_all(long_bands(b,2):long_bands(b,3),1) = a(b);
@@ -136,23 +139,22 @@ switch frameType
                 Pe(b,1) = sum((frameF(long_bands(b,2):long_bands(b,3))-X_hat(long_bands(b,2):long_bands(b,3))).^2);       
             end
             
+            index = (Pe <= T) - stop_increasing;
+            index(index<0) = 0;
+            index = logical(index);
+            a(index) = a(index) + 1;
+            a(Pe > T) = a(Pe > T) - 1; 
             % If the distance between a(b+1) - a(b) > 60 then stop increasing
             % the a values
             if max(abs(a(1:end-1) - a(2:end))) > 60
-                a(Pe < T) = a(Pe < T) - 1;
-                for b = 1:length(long_bands)
-                    a_all(long_bands(b,2):long_bands(b,3),1) = a(b);
-                end
-                % Calculate the new symbols 
-                S = sign(frameF) .* fix((abs(frameF) .* 2.^(-a_all/4)).^(3/4) + MagicNumber);
+                a(index) = a(index) - 1;
                 break;
             end
         end
 
         % Global gain
-        G = a(1) - 10;
-        sfc = a(2:end) - a(1:end-1);
-        sfc = [G;sfc];
+        G = fix(a(1));
+        sfc = round(a(2:end) - a(1:end-1));
 
 end
 

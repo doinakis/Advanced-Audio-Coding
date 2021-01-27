@@ -40,8 +40,8 @@ for i = 1:length(AACSeq3)
     sfc_right = decodeHuff(AACSeq3(i,1).chr.sfc, 12, huffLUT)';
     
     if AACSeq3(i,1).frameType == "ESH"
-        sfc_left = reshape(sfc_left,42,8);
-        sfc_right = reshape(sfc_right,42,8);
+        sfc_left = reshape(sfc_left,41,8);
+        sfc_right = reshape(sfc_right,41,8);
     end 
     decoded_left = decodeHuff(AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook, huffLUT)';
     decoded_right = decodeHuff(AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook, huffLUT)';

@@ -15,7 +15,7 @@
 function SMR = psycho(frameT, frameType, frameTprev1, frameTprev2)
 
 % Create persistent variables for efficiency
-persistent rw_1 rw_2 fw_1 fw_2 spreading_func_ESH spreading_func_OTHER
+persistent spreading_func_ESH spreading_func_OTHER
 persistent q_hat_long q_hat_short hann_long hann_short
 
 global long_bands short_bands
@@ -42,21 +42,6 @@ if isempty(spreading_func_ESH) || isempty(spreading_func_OTHER)
     hann_short = repmat(hann_short,8,1);
     N = 2048;
     hann_long = 0.5 - 0.5 * cos(2*pi/N * ((0:N-1)' + 0.5));
-end
-
-if isempty(rw_1)
-    % If this is the first call of this funcion calculate the
-    % absolute value and phase for every sample for both windows
-    sw_1 = frameTprev1 .* hann_long;
-    sw_2 = frameTprev2 .* hann_long;
-    fft_sw1 = fft(sw_1);
-    fft_sw1 = fft_sw1(1:1024);
-    fft_sw2 = fft(sw_2);
-    fft_sw2 = fft_sw2(1:1024);
-    rw_1 = abs(fft_sw1);
-    rw_2 = abs(fft_sw2);
-    fw_1 = angle(fft_sw1)./(2*pi);
-    fw_2 = angle(fft_sw2)./(2*pi);
 end
 
 switch frameType
@@ -89,13 +74,13 @@ switch frameType
         fft_sw = fft(sw,[],1);
         fft_sw = fft_sw(1:128,:);
         rw = abs(fft_sw);
-        fw = angle(fft_sw)./(2*pi);
+        fw = angle(fft_sw);
         fft_prev = fft(prev_Frames);
         fft_prev = fft_prev(1:128,:);
         r_1 = abs(fft_prev(:,2));
         r_2 = abs(fft_prev(:,1));
-        f_1 = angle(fft_prev(:,2))./(2*pi);
-        f_2 = angle(fft_prev(:,1))./(2*pi);
+        f_1 = angle(fft_prev(:,2));
+        f_2 = angle(fft_prev(:,1));
         r_pred = NaN(128,8);
         f_pred = NaN(128,8);
         
@@ -137,8 +122,7 @@ switch frameType
         tb = -0.299 - 0.43 .* log(cb);
         
         % tb values are in the interval (0,1)
-        tb(tb < 0) = 0;
-        tb(tb > 1) = 1;
+        tb = (tb - min(tb))./(max(tb) - min(tb));
         
         % Noise Masking Tone = 6dB
         NMT = 6;
@@ -160,19 +144,7 @@ switch frameType
         
         % Calculate Signal to Mask Ratio
         SMR = e ./ npart;
-        
-
-        % If this is not the first call of the function the frameTprev2
-        % values doesnt need to be calculated since they were
-        % calculated in the previous call
-        rw_2 = rw_1;
-        fw_2 = fw_1;
-        sw_1 = frameT .* hann_long;
-        fft_sw1 = fft(sw_1);
-        fft_sw1 = fft_sw1(1:1024);
-        rw_1 = abs(fft_sw1);
-        fw_1 = angle(fft_sw1)./(2*pi);
-    
+            
     otherwise
         
         % Apply the window to the current frame calculate the frame's fft
@@ -182,7 +154,18 @@ switch frameType
         fft_sw = fft(sw);
         fft_sw = fft_sw(1:1024);
         rw = abs(fft_sw);
-        fw = angle(fft_sw)./(2*pi);
+        fw = angle(fft_sw);
+        sw_1 = frameTprev1 .* hann_long;
+        sw_2 = frameTprev2 .* hann_long;
+        fft_sw1 = fft(sw_1);
+        fft_sw1 = fft_sw1(1:1024);
+        rw_1 = abs(fft_sw1);
+        fw_1 = angle(fft_sw1);
+        fft_sw2 = fft(sw_2);
+        fft_sw2 = fft_sw2(1:1024);
+        rw_2 = abs(fft_sw2);
+        fw_2 = angle(fft_sw2);
+        
         
         % Calculate the predicted values 
         r_pred = 2 .* rw_1 - rw_2;
@@ -218,8 +201,7 @@ switch frameType
         tb = -0.299 - 0.43 .* log(cb);
         
         % tb values are in the interval (0,1)
-        tb(tb < 0) = 1e-4;
-        tb(tb > 1) = 1 - 1e-4;
+        tb = (tb - min(tb))./(max(tb) - min(tb));
         
         % Noise Masking Tone = 6dB
         NMT = 6;
@@ -241,14 +223,7 @@ switch frameType
         
         % Calculate Signal to Mask Ratio
         SMR = e ./ npart;
-        
-        % If this is not the first call of the function the frameTprev2
-        % values doesnt need to be calculated since they were
-        % calculated in the previous call
-        rw_2 = rw_1;
-        fw_2 = fw_1;
-        rw_1 = rw;
-        fw_1 = fw;
+       
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

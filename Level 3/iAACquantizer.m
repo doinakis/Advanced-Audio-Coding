@@ -18,8 +18,10 @@ global long_bands short_bands
 switch frameType
     case "ESH"
         
+        
+        sfc = [G;sfc];
         % Reconstruct the a values
-        a(1,:) = G + 10;
+        a(1,:) = G;
         for i = 2:length(sfc)
             a(i,:) = a(i-1,:) + sfc(i,:);
         end
@@ -34,8 +36,10 @@ switch frameType
     otherwise
         
         a = NaN(length(sfc),1);
+        
+        sfc = [G;sfc];
         % Reconstruct the a values
-        a(1) = G + 10;
+        a(1) = G;
         for i = 2:length(sfc)
             a(i) = a(i-1) + sfc(i);
         end

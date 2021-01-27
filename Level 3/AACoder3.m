@@ -30,7 +30,7 @@ huffLUT = loadLUT();
 y = audioread(fNameIn,'double');
 
 % The window type 
-window_type = "SIN";
+window_type = "KBD";
 
 % Preallocate the space for the frames 
 AACSeq3(ceil(size(y,1)/1024),1) = struct();
@@ -98,6 +98,8 @@ for i = 1:frame_counter
         [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(S_right, huffLUT);
         AACSeq3(i,1).chl.sfc = encodeHuff(AACSeq3(i,1).chl.sfc(:), huffLUT, 12);
         AACSeq3(i,1).chr.sfc = encodeHuff(AACSeq3(i,1).chr.sfc(:), huffLUT, 12);
+        prevframe2 = prevframe1;
+        prevframe1 = [frame1(:,i) frame2(:,i)];
         continue;
     end
     % Apply the SSC, filterbank and lastly the TNS 
