@@ -3,14 +3,14 @@ function decCoeffs = decodeHuff(huffSec, huffCodebook, huffLUT)
 %
 %   decCoeffs = decodeHuff(huffSec, huffCodebook, huffLUT) performs huffman
 %   decoding, where huffSec is a string of '1' and '0' corresponding to the
-%   Huffman encoded stream, and huffCodebook is the index (0 to 12) of the 
-%   codebook used, as outputted by encodeHuff. huffLUT is the Huffman 
+%   Huffman encoded stream, and huffCodebook is the index (0 to 12) of the
+%   codebook used, as outputted by encodeHuff. huffLUT is the Huffman
 %   look-up tables to be loaded using loadLUT.m. The output decCoeffs is
 %   the decoded quantised (integer) values.
 %
 %   CAUTION: due to zero padding the length of decCoeffs may be larger than
 %   the length of the encoded sequence. Simply ignore values (they should
-%   be equal to zero) that are outside the index range 
+%   be equal to zero) that are outside the index range
 %   [1:length(encoded sequence)].
 
 huffLUTi = huffLUT{huffCodebook};
@@ -29,7 +29,7 @@ while(~eos)%end of stream
     wordbit=0;
     r=1;%row indicator
     b=huffSec(streamIndex+wordbit);
-  
+
     %decoding tuple according to inverse matrix
     while(1)
         b=huffSec(streamIndex+wordbit);
@@ -76,7 +76,7 @@ while(~eos)%end of stream
     end
     decCoeffs=[decCoeffs nTupleDec];
     if (streamIndex>length(huffSec))
-        eos=1;   
+        eos=1;
     end
 
 end

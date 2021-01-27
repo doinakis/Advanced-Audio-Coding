@@ -2,9 +2,9 @@ function [huffSec, huffCodebook] = encodeHuff(coeffSec, huffLUT, forcedCodebook)
 % ENCODEHUFF Huffman encoder stage
 %
 %   [huffSec, huffCodebook] = encodeHuff(coeffSec, huffLUT) performs
-%   huffman coding for quantised (integer) values of a section coeffSec; 
+%   huffman coding for quantised (integer) values of a section coeffSec;
 %   huffLUT are the Huffman look-up tables to be loaded using loadLUT.m
-%   
+%
 %   It returns huffSec, a string of '1' and '0' corresponding to the
 %   Huffman encoded stream, and huffCodebook, the number of the Huffman
 %   codebook used (see page 147 in w2203tfa.pdf and pages 82-94 in
@@ -103,7 +103,7 @@ function [huffSec]=huffLUTCode1(huffLUT, coeffSec)
     huffCodebook=huffLUT.codebook;
     nTupleSize=huffLUT.nTupleSize;
     maxAbsCodeVal=huffLUT.maxAbsCodeVal;
-    signedValues=huffLUT.signedValues;    
+    signedValues=huffLUT.signedValues;
     numTuples=ceil(length(coeffSec)/nTupleSize);
     if(signedValues)
         coeffSec=coeffSec+maxAbsCodeVal;
@@ -130,43 +130,43 @@ function [huffSec]=huffLUTCode1(huffLUT, coeffSec)
 
 function [huffSec]=huffLUTCode0()
     huffSec='';
-    
+
 function [huffSec]=huffLUTCodeESC(huffLUT, coeffSec)
     LUT=huffLUT.LUT;
     huffCodebook=huffLUT.codebook;
     nTupleSize=huffLUT.nTupleSize;
     maxAbsCodeVal=huffLUT.maxAbsCodeVal;
-    signedValues=huffLUT.signedValues;    
-    
+    signedValues=huffLUT.signedValues;
+
     numTuples=ceil(length(coeffSec)/nTupleSize);
     base=maxAbsCodeVal+1;
     coeffSecPad=zeros(1,numTuples*nTupleSize);
     coeffSecPad(1:length(coeffSec))=coeffSec;
-    
+
     nTupleOffset=zeros(1,nTupleSize);
     for i=1:numTuples
-        nTuple=coeffSecPad((i-1)*nTupleSize+1:i*nTupleSize);   
+        nTuple=coeffSecPad((i-1)*nTupleSize+1:i*nTupleSize);
         lnTuple=nTuple;
         lnTuple(lnTuple==0)=eps;
         N4=max([0 0; floor(log2(abs(lnTuple)))]);
         N=max([0 0 ; N4-4]);
         esc=abs(nTuple)>15;
-        
+
         nTupleESC=nTuple;
         nTupleESC(esc)=sign(nTupleESC(esc))*16;%Just keep the sixteens here (nTupleESC). nTuple contains the actual values
-        
+
         huffIndex=abs(nTupleESC)*(base.^[nTupleSize-1:-1:0])';
         hexHuff=LUT(huffIndex+1,3);
         hexHuff=dec2hex(hexHuff);%Dec values were saved. Converting to hex
         huffSecLen=LUT(huffIndex+1,2);
-        
+
         %Adding sufficient ones to the prefix. If N<=0 empty string created
         escape_prefix1='';
         escape_prefix2='';
         escape_prefix1(1:N(1))='1';
         escape_prefix2(1:N(2))='1';
-        
-        
+
+
         %Calculating the escape words. Taking absolute values. Will add the
         %sign later on
         if esc(1)
@@ -183,11 +183,11 @@ function [huffSec]=huffLUTCodeESC(huffLUT, coeffSec)
             escape_separator2='';
             escape_word2='';
         end
-        
+
         % escape_word1=dec2bin(abs(nTuple(1))-2^(N4(1)),N4(1));
-        
+
         escSeq=[escape_prefix1, escape_separator1, escape_word1, escape_prefix2, escape_separator2, escape_word2];
-        
+
         %adding the sign bits and the escape sequence
         huffSec{i}=[dec2bin(hex2dec(hexHuff),huffSecLen),strcat((num2str(nTuple'<0))'), escSeq];%appending sign
     end

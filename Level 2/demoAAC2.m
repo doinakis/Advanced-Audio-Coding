@@ -6,16 +6,16 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %--------------- Implements Level 2 of the Assignment (TNS) ---------------
-% Function that calculates the SNR from the input signal and the one that 
+% Function that calculates the SNR from the input signal and the one that
 % was produced by the AACoder and iAACoder.
 % Where:
 % fnameIn: The path (or the name if its in the same folder) of the .wav
 % file
-% fnameOut: The desirable output file name 
+% fnameOut: The desirable output file name
 %%
 function SNR = demoAAC2(fNameIn, fNameOut)
 
-% Read the initial signal to calculate the SNR 
+% Read the initial signal to calculate the SNR
 y = audioread(fNameIn,'double');
 
 % Zero pad at the end of the signal

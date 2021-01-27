@@ -8,7 +8,7 @@
 % the output is 42-by-8, otherwise it is 69-by-1.
 % Where:
 % frameT: The current frame
-% frameType: The type of the current frame 
+% frameType: The type of the current frame
 % frameTprev1: The values of the previous frame
 % frameTprev2: The values of the frameTprev1's previous frame
 %%
@@ -48,11 +48,11 @@ switch frameType
     case "ESH"
         % N
         N = 256;
-        
+
         % If the frame is ESH then calculate the 8 areas
         s = NaN(2048,1);
         prev_Frames = NaN(2048,1);
-        
+
         % The y variable holds 2048-by-2 samples. It holds the 8*256 subframes
         counter = 1;
         for i = 449:128:1345
@@ -60,16 +60,16 @@ switch frameType
             prev_Frames(counter:counter+255,:) = frameTprev1(i:i+255,:);
             counter = counter + 256;
         end
-        
-        % Apply the filter to every subframe 
+
+        % Apply the filter to every subframe
         sw = s .* hann_short;
         prev_Frames = prev_Frames .* hann_short;
         sw = reshape(sw,[N,8]);
         prev_Frames = reshape(prev_Frames,[N,8]);
-        
-        % Only the 7th and 8th subframes are needed from the previous frame 
+
+        % Only the 7th and 8th subframes are needed from the previous frame
         prev_Frames = prev_Frames(:,7:8);
-        
+
         % Calculate the fft of every sub-frame
         fft_sw = fft(sw,[],1);
         fft_sw = fft_sw(1:128,:);
@@ -83,9 +83,9 @@ switch frameType
         f_2 = angle(fft_prev(:,1));
         r_pred = NaN(128,8);
         f_pred = NaN(128,8);
-        
+
         % Calculate the predicted values for every sub-frame
-        for i = 1:8 
+        for i = 1:8
             r_pred(:,i) = 2 .* r_1 - r_2;
             f_pred(:,i) = 2 .* f_1 - f_2;
             r_2 = r_1;
@@ -93,18 +93,18 @@ switch frameType
             r_1 = rw(:,i);
             f_1 = fw(:,i);
         end
-        
+
         % Calculate the predictabilities
         cw = sqrt((rw.*cos(fw) - r_pred.*cos(f_pred)).^2 + (rw.*sin(fw) - r_pred.*sin(f_pred)).^2)./(rw + abs(r_pred));
-        
+
         e = NaN(length(short_bands),8);
         c = NaN(length(short_bands),8);
-        % 
+        %
         for b = 1:length(short_bands)
             e(b,:) = sum(rw(short_bands(b,2):short_bands(b,3),:).^2,1);
             c(b,:) = sum(cw(short_bands(b,2):short_bands(b,3),:).*rw(short_bands(b,2):short_bands(b,3),:).^2,1);
         end
-        
+
         ecb = NaN(length(short_bands),8);
         ct = NaN(length(short_bands),8);
         % Combine the energy and predictability with the spreading function
@@ -112,41 +112,41 @@ switch frameType
             ecb(b,:) = sum(e .* spreading_func_ESH(:,b),1);
             ct(b,:) = sum(c .* spreading_func_ESH(:,b),1);
         end
-        
+
         % Normalization
         cb = ct ./ ecb;
         spreading_sum = sum(spreading_func_ESH,1)';
         en = ecb ./ spreading_sum;
-        
+
         % Calculate tonality index
         tb = -0.299 - 0.43 .* log(cb);
-        
+
         % tb values are in the interval (0,1)
         tb = (tb - min(tb))./(max(tb) - min(tb));
-        
+
         % Noise Masking Tone = 6dB
         NMT = 6;
-       
+
         % Tone Masking Noise = 18dB
         TMN = 18;
-        
-        %SNR calculation for every b 
-        SNR = tb .* TMN + (1 - tb) .* NMT; 
-        
+
+        %SNR calculation for every b
+        SNR = tb .* TMN + (1 - tb) .* NMT;
+
         % Convert db to energy
         bc = 10.^(-SNR./10);
-        
+
         % Calculate the energy threshold
         nb = en .* bc;
-        
+
         % Calculate the noise level for every band
         npart = max(nb,q_hat_short);
-        
+
         % Calculate Signal to Mask Ratio
         SMR = e ./ npart;
-            
+
     otherwise
-        
+
         % Apply the window to the current frame calculate the frame's fft
         % and keep only the first 1024 samples. From the fft extract the
         % absolute value and the phase for each sample
@@ -165,71 +165,71 @@ switch frameType
         fft_sw2 = fft_sw2(1:1024);
         rw_2 = abs(fft_sw2);
         fw_2 = angle(fft_sw2);
-        
-        
-        % Calculate the predicted values 
+
+
+        % Calculate the predicted values
         r_pred = 2 .* rw_1 - rw_2;
         f_pred = 2 .* fw_1 - fw_2;
-        
-        % Calculate the predictabilities 
+
+        % Calculate the predictabilities
         cw = sqrt((rw.*cos(fw) - r_pred.*cos(f_pred)).^2 + (rw.*sin(fw) - r_pred.*sin(f_pred)).^2)./(rw + abs(r_pred));
-        
+
         e = NaN(length(long_bands),1);
         c = NaN(length(long_bands),1);
-        
-        %  
+
+        %
         for b = 1:length(long_bands)
             e(b,1) = sum(rw(long_bands(b,2):long_bands(b,3)).^2);
             c(b,1) = sum(cw(long_bands(b,2):long_bands(b,3)).*rw(long_bands(b,2):long_bands(b,3)).^2);
         end
-        
+
         ecb = NaN(length(long_bands),1);
         ct = NaN(length(long_bands),1);
-        
-        % Combine the energy and predictability with the spreading function 
+
+        % Combine the energy and predictability with the spreading function
         for b = 1:length(long_bands)
             ecb(b,1) = sum(e .* spreading_func_OTHER(:,b));
             ct(b,1) = sum(c .* spreading_func_OTHER(:,b));
         end
-        
-        % Normalization 
+
+        % Normalization
         cb = ct ./ ecb;
         spreading_sum = sum(spreading_func_OTHER,1)';
         en = ecb ./ spreading_sum;
-        
+
         % Calculate the tonality indices
         tb = -0.299 - 0.43 .* log(cb);
-        
+
         % tb values are in the interval (0,1)
         tb = (tb - min(tb))./(max(tb) - min(tb));
-        
+
         % Noise Masking Tone = 6dB
         NMT = 6;
-        
+
         % Tone Masking Noise = 18dB
         TMN = 18;
-        
+
         %SNR calculation for every b
         SNR = tb .* TMN + (1 - tb) .* NMT;
-        
+
         % Convert db to energy
         bc = 10.^(-SNR./10);
-        
+
         % Calculate the energy threshold
         nb = en .* bc;
-        
+
         % Calculate the noise level for every band
         npart = max(nb,q_hat_long);
-        
+
         % Calculate Signal to Mask Ratio
         SMR = e ./ npart;
-       
+
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Function that implements the spreading function calculation
 % Where:
-% i: the band that causes the spreading 
+% i: the band that causes the spreading
 % j: the band that the spreading affects
 %%
 function x = spreading_function(i,j,bval)

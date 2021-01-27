@@ -27,9 +27,9 @@ function huffLUT = loadLUT()
 function [h]=vlcTable(codeArray)
 % Generates the inverse variable length coding tree, stored in a table. It
 % is used for decoding.
-% 
-% codeArray: the input matrix, in the form of a cell array, with each cell 
-% containing codewords represented in string format (array of chars) 
+%
+% codeArray: the input matrix, in the form of a cell array, with each cell
+% containing codewords represented in string format (array of chars)
     h=zeros(1,3);
     for codeIndex=1:length(codeArray)
         word=str2num([codeArray{codeIndex}]')';

@@ -19,10 +19,10 @@ function AACSeq1 = AACoder1(fNameIn)
 % Read the audio signal from the input
 y = audioread(fNameIn,'double');
 
-% The window type 
+% The window type
 window_type = "SIN";
 
-% Preallocate the space for the frames 
+% Preallocate the space for the frames
 AACSeq1(ceil(size(y,1)/1024),1) = struct();
 
 % Helping variables to create the 50% overlapping
@@ -36,7 +36,7 @@ frame_counter = 1;
 
 % Create the overlapping frames
 for i = 1:1024:size(y,1)
-    
+
     % If the samples cant completely fill the las frame zero pad at the end
     if i+2047 > size(y,1)
         frame1(1:2048,frame_counter) = [y(i:end,1);zeros(i+2047-size(y,1),1)];
@@ -51,17 +51,17 @@ end
 
 % For every frame apply the AAC coding process
 for i = 1:frame_counter
-    
+
     % Make a dual channel frame from frame1 and frame2
     frameT = [frame1(:,i) frame2(:,i)];
-    
+
     % For the last frame we assume that the next frame is zeros
     if i == frame_counter
         nextframeT = zeros(2048,2);
     else
         nextframeT = [frame1(:,i+1) frame2(:,i+1)];
     end
-    
+
     % For the first frame assume that the previous one is OLS type
     if i == 1
         AACSeq1(i,1).frameType = SSC(frameT,nextframeT,"OLS");
@@ -76,13 +76,13 @@ for i = 1:frame_counter
         end
         continue;
     end
-    
+
     AACSeq1(i,1).frameType = SSC(frameT,nextframeT,AACSeq1(i-1,1).frameType);
     AACSeq1(i,1).winType = window_type;
-    
+
     % Apply the filterbank
     frameF = filterbank(frameT,AACSeq1(i,1).frameType,AACSeq1(i,1).winType);
-    
+
     % If the frame type was ESH reshape the data to be 128-by-8 array
     % and assing to the corresponding channel
     if AACSeq1(i,1).frameType == "ESH"

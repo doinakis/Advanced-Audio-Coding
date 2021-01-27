@@ -6,13 +6,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Function that calculates the MDCT coeffs after TNS is applied.(frameFout)
 % Where:
-% frameFin: The MDCT coefficients 
+% frameFin: The MDCT coefficients
 % frameType: The type of the input frame
 %%
 function [frameFout,TNScoeffs] = TNS(frameFin,frameType)
 global long_bands short_bands
 
-switch frameType 
+switch frameType
     case "ESH"
         % If the frame is ESH then use short bands
         bands = short_bands;
@@ -56,7 +56,7 @@ for i = 1:length(bands)
     S(index,:) = repmat(sqrt(P(i,:)),length(index),1);
 end
 
-% Smoothing of the coefficients 
+% Smoothing of the coefficients
 for k = n-1:-1:1
     S(k,:) = (S(k,:) + S(k+1,:))./2;
 end
@@ -85,7 +85,7 @@ if frameType == "ESH"
         a(:,i) = R\r;
     end
 else
-    
+
     [corellation,lag] = xcorr(Xw,Xw,4,'biased');
     r = [corellation(lag == 1);corellation(lag == 2);
         corellation(lag == 3);corellation(lag == 4)];
@@ -97,7 +97,7 @@ else
 end
 
 % Quantization of the coefficients so that the inverse filter can be
-% applied 
+% applied
 % Quantization using R = 4 bits quantizer with 0.1 step
 minimum = -0.7;
 L = 2^4 - 1;
