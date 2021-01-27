@@ -80,6 +80,8 @@ end
 
 % Ignore the first 1024 samples that were zero padded
 signal = signal(1025:end,:);
+signal(signal < -1 ) = -1;
+signal(signal > 1 ) = 1;
 
 % Write the audio file
 audiowrite(fNameOut,signal,48000);
