@@ -2,7 +2,6 @@
 /*
 *.wav
 *.asv
-*.mat
 # But accept
 !.gitignore
 !README.md
