@@ -9,8 +9,14 @@
 % Function that implements the inverse AACoder. x is the output signal.
 % The output signal is stored with Fs = 40kHz and has 2 channels
 % Where:
-% ACCSeq1: The struct that contains the frameType,winType,chl.frameF
-%   (the left channels mdct coefficients), chr.frameF (the right channels mdct coefficients)
+% ACCSeq1: frameType,winType,chl.TNScoeffs,chr.TNScoeffs
+% (the quantized TNS coefficients of the left and right channel, 4-by-8 for ESH 4-by-1
+% else), chl.T,chr.T (the left and right channel's acoustics threshold),
+% chl.G,chr.G (the left and right channel's global gain, 8 for ESH 1
+% else),chl.sfc,chr.sfc (the left and right channel's encoded sequence
+% sfc),chl.stream,chr.stream (the left and right channel's encoded
+% quantized MDCT sequence), chl.codebook, chr.codebook (the left and right
+% channel's codebook)
 % fnameOut: The desirable output file name
 %%
 function x = iAACoder3(AACSeq3,fNameOut)
@@ -80,8 +86,10 @@ end
 
 % Ignore the first 1024 samples that were zero padded
 signal = signal(1025:end,:);
-signal(signal < -1 ) = -1;
-signal(signal > 1 ) = 1;
+
+% Clip the data if necessary
+signal(signal < -1) = -1;
+signal(signal > 1) = 1;
 
 % Write the audio file
 audiowrite(fNameOut,signal,48000);

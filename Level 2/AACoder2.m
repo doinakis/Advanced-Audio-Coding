@@ -7,20 +7,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %--------------- Implements Level 2 of the Assignment (TNS) ---------------
 % Function that calculates the coded frames and returns a K-by-1 srtuct
-% with the frameType,winType,chl.frameF (the left channels mdct coefficients),
-% chr.frameF (the right channels mdct coefficients). If the frame is ESH
-% then the chr and chl contains a 128-by-8 matrix, otherwise contain a
-% 1024-by-1. Where:
+% with the frameType,winType,chl.TNScoeffs,chr.TNScoeffs (the quantized TNS
+% coefficients of the left and right channel, 4-by-8 for ESH 4-by-1
+% else), chl.frameF, chr.frameF (the MDCT coefficients after the TNS is
+% applied for the left and right channel).
+% Where:
 % fNameIn: The path (or the name if its in the same folder) of the .wav
 % file
 %%
 function AACSeq2 = AACoder2(fNameIn)
 
+% Load the Psychoacoustic Model bands
+global long_bands short_bands
+bands = load('TableB219.mat');
+long_bands = bands.B219a;
+short_bands = bands.B219b;
+long_bands(:,1:3) = long_bands(:,1:3) + 1;
+short_bands(:,1:3) = short_bands(:,1:3) + 1;
+
 % Read the audio signal from the input
 y = audioread(fNameIn,'double');
 
-% The window type
-window_type = "KBD";
+% Define the window type
+window_type = "SIN";
 
 % Preallocate the space for the frames
 AACSeq2(ceil(size(y,1)/1024),1) = struct();

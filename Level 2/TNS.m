@@ -11,12 +11,7 @@
 %%
 function [frameFout,TNScoeffs] = TNS(frameFin,frameType)
 
-% Load the Psychoacoustic Model bands
-bands = load('TableB219.mat');
-long_bands = bands.B219a;
-short_bands = bands.B219b;
-long_bands(:,1:3) = long_bands(:,1:3) + 1;
-short_bands(:,1:3) = short_bands(:,1:3) + 1;
+global long_bands short_bands
 
 switch frameType
     case "ESH"

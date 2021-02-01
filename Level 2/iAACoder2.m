@@ -9,8 +9,10 @@
 % Function that implements the inverse AACoder. x is the output signal.
 % The output signal is stored with Fs = 40kHz and has 2 channels
 % Where:
-% ACCSeq1: The struct that contains the frameType,winType,chl.frameF
-%   (the left channels mdct coefficients), chr.frameF (the right channels mdct coefficients)
+% ACCSeq1: The struct that contains the  frameType,winType,chl.TNScoeffs,
+% chr.TNScoeffs (the quantized TNS coefficients of the left and right 
+% channel, 4-by-8 for ESH 4-by-1 else), chl.frameF, chr.frameF (the MDCT 
+% coefficients after the TNS is applied for the left and right channel).
 % fnameOut: The desirable output file name
 %%
 function x = iAACoder2(AACSeq2,fNameOut)

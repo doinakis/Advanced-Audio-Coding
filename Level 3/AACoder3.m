@@ -6,13 +6,20 @@
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %------------- Implements Level 3 of the Assignment (PSYCHO) --------------
-% Function that calculates the coded frames and returns a K-by-1 srtuct
-% with the frameType,winType,chl.frameF (the left channels mdct coefficients),
-% chr.frameF (the right channels mdct coefficients). If the frame is ESH
-% then the chr and chl contains a 128-by-8 matrix, otherwise contain a
-% 1024-by-1. Where:
+% Function that calculates the coded frames for the compressed signal
+% and returns a K-by-1 srtuct with the frameType,winType,chl.TNScoeffs,chr.TNScoeffs
+% (the quantized TNS coefficients of the left and right channel, 4-by-8 for ESH 4-by-1
+% else), chl.T,chr.T (the left and right channel's acoustics threshold),
+% chl.G,chr.G (the left and right channel's global gain, 8 for ESH 1
+% else),chl.sfc,chr.sfc (the left and right channel's encoded sequence
+% sfc),chl.stream,chr.stream (the left and right channel's encoded
+% quantized MDCT sequence), chl.codebook, chr.codebook (the left and right
+% channel's codebook)
+% Where:
 % fNameIn: The path (or the name if its in the same folder) of the .wav
 % file
+% fnameAACoded: The desirable name of the matrix that will hold the
+% compressed sigal
 %%
 function AACSeq3 = AACoder3(fNameIn, fnameAACoded)
 
@@ -30,7 +37,7 @@ huffLUT = loadLUT();
 y = audioread(fNameIn,'double');
 
 % The window type
-window_type = "KBD";
+window_type = "SIN";
 
 % Preallocate the space for the frames
 AACSeq3(ceil(size(y,1)/1024),1) = struct();
@@ -88,16 +95,22 @@ for i = 1:frame_counter
             [frameF_left,AACSeq3(i,1).chl.TNScoeffs] = TNS(frameF(:,1),AACSeq3(i,1).frameType);
             [frameF_right,AACSeq3(i,1).chr.TNScoeffs] = TNS(frameF(:,2),AACSeq3(i,1).frameType);
         end
+        % Apply the psychoacoustic model for both channels 
         SMR_left = psycho(frameT(:,1), AACSeq3(i,1).frameType, prevframe1(:,1), prevframe2(:,1));
         SMR_right = psycho(frameT(:,2), AACSeq3(i,1).frameType, prevframe1(:,2), prevframe2(:,2));
+        
+        % Apply the quantization based on the acoustics threshold
         [S_left, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
         AACSeq3(i,1).chl.T = T;
         [S_right, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
         AACSeq3(i,1).chr.T = T;
+        
+        % Encode both streams and sfc coefficients with huffman
         [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(S_left, huffLUT);
         [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(S_right, huffLUT);
         AACSeq3(i,1).chl.sfc = encodeHuff(AACSeq3(i,1).chl.sfc(:), huffLUT, 12);
         AACSeq3(i,1).chr.sfc = encodeHuff(AACSeq3(i,1).chr.sfc(:), huffLUT, 12);
+        
         % Set the prev frames for the next iteration
         prevframe2 = prevframe1;
         prevframe1 = [frame1(:,i) frame2(:,i)];
@@ -119,13 +132,18 @@ for i = 1:frame_counter
         [frameF_left,AACSeq3(i,1).chl.TNScoeffs] = TNS(frameF(:,1),AACSeq3(i,1).frameType);
         [frameF_right,AACSeq3(i,1).chr.TNScoeffs] = TNS(frameF(:,2),AACSeq3(i,1).frameType);
     end
-
+    
+    % Apply the psychoacoustic model for both channels 
     SMR_left = psycho(frameT(:,1), AACSeq3(i,1).frameType, prevframe1(:,1), prevframe2(:,1));
     SMR_right = psycho(frameT(:,2), AACSeq3(i,1).frameType, prevframe1(:,2), prevframe2(:,2));
+    
+    % Apply the quantization based on the acoustics threshold
     [S_left, AACSeq3(i,1).chl.sfc, AACSeq3(i,1).chl.G] = AACquantizer(frameF_left, AACSeq3(i,1).frameType, SMR_left);
     AACSeq3(i,1).chl.T = T;
     [S_right, AACSeq3(i,1).chr.sfc, AACSeq3(i,1).chr.G] = AACquantizer(frameF_right, AACSeq3(i,1).frameType, SMR_right);
     AACSeq3(i,1).chr.T = T;
+    
+    % Encode both streams and sfc coefficients with huffman
     [AACSeq3(i,1).chl.stream, AACSeq3(i,1).chl.codebook] = encodeHuff(S_left, huffLUT);
     [AACSeq3(i,1).chr.stream, AACSeq3(i,1).chr.codebook] = encodeHuff(S_right, huffLUT);
     AACSeq3(i,1).chl.sfc = encodeHuff(AACSeq3(i,1).chl.sfc(:), huffLUT, 12);

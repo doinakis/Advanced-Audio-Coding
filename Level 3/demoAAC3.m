@@ -19,8 +19,6 @@ function [SNR, bitrate, compression] = demoAAC3(fNameIn, fNameOut, fnameAACoded)
 % Read the initial signal to calculate the SNR
 [y,fs] = audioread(fNameIn,'double');
 y_info = audioinfo(fNameIn);
-% Zero pad at the end of the signal
-y_padded = [y;zeros(1024,2)];
 
 % Check if the output name icludes the file extension
 if length(fNameOut) < 4
@@ -39,8 +37,9 @@ end
 % Apply the AAC3 and inverse AAC3
 AACSeq3 = AACoder3(fNameIn, fnameAACoded);
 x = iAACoder3(AACSeq3,fNameOut);
+
 % Calculate the SNR of the signal
-SNR = snr(y_padded,x(1:length(y_padded),:) - y_padded);
+SNR = snr(y,x(1:length(y),:) - y);
 
 % Calculate number of bits for the compressed file
 total_bits = 0;
