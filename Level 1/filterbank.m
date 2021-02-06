@@ -19,7 +19,7 @@ function frameF = filterbank(frameT,frameType,winType)
 persistent W_long W_short
 
 if isempty(W_long)
-    % Calculate the MDCT coefficients matrices
+    % Calculate the MDCT coefficients matrices for short and long windows
     N_long = 2048;
     n_zero = (N_long/2 + 1)/2;
     n = 0:N_long-1;
@@ -106,15 +106,13 @@ switch frameType
         window = [zeros(448,1);win_short(1:128);ones(448,1);win_long(1025:end)];
 end
 
-% Initialize an array for the mdct coefficients
-frameF = NaN(N_long/2,2);
-
-
 if (frameType == "ESH")
     
     % If the frame is ESH then calculate the 8 areas
     y = NaN(2048,2);
-
+    
+    % Initialize an array for the mdct coefficients
+    frameF = [];
     % The y variable holds 2048-by-2 samples. It holds the 8*256 subframes
     counter = 1;
     for i = 449:128:1345
@@ -128,7 +126,7 @@ if (frameType == "ESH")
     % Apply the mdct
     counter_bottom = 1;
     counter_top = counter_bottom + 255;
-    frameF=[];
+    
     for i = 1:8
         frameF = [frameF W_short * z(counter_bottom:counter_top,:)];
         counter_bottom = counter_bottom + 256;
@@ -136,7 +134,10 @@ if (frameType == "ESH")
     end
 
 else
-
+    
+    % Initialize an array for the mdct coefficients
+    frameF = NaN(N_long/2,2);
+    
     % Apply the window to the current frame
     z = frameT .* window;
 

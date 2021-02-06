@@ -20,7 +20,7 @@ function frameT = ifilterbank(frameF,frameType,winType)
 persistent W_long W_short
 
 if isempty(W_long)
-    % Calculate the iMDCT coefficients matrices
+    % Calculate the iMDCT coefficients matrices for short and long windows
     N_long = 2048;
     n_zero = (N_long/2 + 1)/2;
     k = 0:N_long/2-1;
@@ -107,7 +107,7 @@ switch frameType
         window = [zeros(448,1);win_short(1:128);ones(448,1);win_long(1025:end)];
 end
 
-frameT = NaN(N_long,2);
+
 
 if (frameType == "ESH")
 
@@ -146,10 +146,12 @@ if (frameType == "ESH")
     end
     frameT = [total1 total2];
 else
-
+    
+    frameT = NaN(N_long,2);
+    
     % For every other frame just calculate the inverse mdct and multiply
     % the result with the corresponding window
-
+    
     frameT = W_long * frameF;
     frameT = frameT .* window;
 end
