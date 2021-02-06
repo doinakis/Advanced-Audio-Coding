@@ -15,6 +15,24 @@
 %%
 function frameF = filterbank(frameT,frameType,winType)
 
+% MDCT matrices coefficients
+persistent W_long W_short
+
+if isempty(W_long)
+    % Calculate the MDCT coefficients matrices
+    N_long = 2048;
+    n_zero = (N_long/2 + 1)/2;
+    n = 0:N_long-1;
+    k = (0:N_long/2-1)';
+    W_long = 2*cos(2*pi/N_long .* (n + n_zero) .* (k + 1/2));
+    
+    N_short = 256;
+    n_zero = (N_short/2 + 1)/2;
+    n = 0:N_short-1;
+    k = (0:N_short/2-1)';
+    W_short = 2*cos(2*pi/N_short .* (n + n_zero) .* (k + 1/2));
+end
+
 % Define the sizes of long and short windows
 N_long = 2048;
 N_short = 256;
@@ -93,7 +111,7 @@ frameF = NaN(N_long/2,2);
 
 
 if (frameType == "ESH")
-
+    
     % If the frame is ESH then calculate the 8 areas
     y = NaN(2048,2);
 
@@ -110,38 +128,20 @@ if (frameType == "ESH")
     % Apply the mdct
     counter_bottom = 1;
     counter_top = counter_bottom + 255;
-    counter = 1;
-    n = 0:N_short-1;
-    n = n';
-    n_zero = (N_short/2 + 1)/2;
+    frameF=[];
     for i = 1:8
-        for k = 0:N_short/2-1
-            frameF(counter,:) = 2 .* sum(z(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
-            counter = counter + 1;
-        end
+        frameF = [frameF W_short * z(counter_bottom:counter_top,:)];
         counter_bottom = counter_bottom + 256;
         counter_top = counter_top + 256;
     end
 
-    % Make a 128-by-16 frame as asked with 8 sub matrices 128-by-2 for each
-    % subframe
-    temp1 = reshape(frameF(:,1),[128,8]);
-    temp2 = reshape(frameF(:,2),[128,8]);
-    frameF = NaN(N_short/2,16);
-    frameF(:,1:2:15) = temp1;
-    frameF(:,2:2:16) = temp2;
 else
 
     % Apply the window to the current frame
     z = frameT .* window;
 
     % Calculate the mdct
-    n = 0:N_long-1;
-    n = n';
-    n_zero = (N_long/2 + 1)/2;
-    for k = 0:N_long/2-1
-        frameF(k+1,:) = 2 .* sum(z .* cos(2*pi/N_long * (n + n_zero) * (k + 1/2)));
-    end
+    frameF = W_long * z;
 end
 
 end

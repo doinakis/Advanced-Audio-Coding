@@ -16,6 +16,24 @@
 %%
 function frameT = ifilterbank(frameF,frameType,winType)
 
+% MDCT matrices coefficients
+persistent W_long W_short
+
+if isempty(W_long)
+    % Calculate the iMDCT coefficients matrices
+    N_long = 2048;
+    n_zero = (N_long/2 + 1)/2;
+    k = 0:N_long/2-1;
+    n = (0:N_long-1)';
+    W_long = 2/N_long * cos(2*pi/N_long .* (n + n_zero) .* (k + 1/2));
+    
+    N_short = 256;
+    n_zero = (N_short/2 + 1)/2;
+    k = 0:N_short/2-1;
+    n = (0:N_short-1)';
+    W_short = 2/N_short * cos(2*pi/N_short .* (n + n_zero) .* (k + 1/2));
+end
+
 % Define the sizes of long and short windows
 N_long = 2048;
 N_short = 256;
@@ -99,16 +117,10 @@ if (frameType == "ESH")
     frameF = [reshape(frameF(:,1:2:15),[],1) reshape(frameF(:,2:2:16),[],1)];
     counter_bottom = 1;
     counter_top = counter_bottom + 127;
-    counter = 1;
-    k = 0:N_short/2-1;
-    k = k';
-    n_zero = (N_short/2 + 1)/2;
 
+    frameT = [];
     for i = 1:8
-        for n = 0:N_short-1
-            frameT(counter,:) = 2/N_short .* sum(frameF(counter_bottom:counter_top,:) .* cos(2*pi/N_short * (n + n_zero)*(k + 1/2)));
-            counter = counter + 1;
-        end
+        frameT = [frameT; W_short * frameF(counter_bottom:counter_top,:)];
         counter_bottom = counter_bottom + 128;
         counter_top = counter_top + 128;
     end
@@ -137,13 +149,8 @@ else
 
     % For every other frame just calculate the inverse mdct and multiply
     % the result with the corresponding window
-    n_zero = (N_long/2 + 1)/2;
-    k = 0:N_long/2-1;
-    k = k';
 
-    for n = 0:N_long-1
-        frameT(n+1,:) = 2/N_long .* sum(frameF .* cos(2*pi/N_long * (n + n_zero)*(k + 1/2)));
-    end
+    frameT = W_long * frameF;
     frameT = frameT .* window;
 end
 
